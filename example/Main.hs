@@ -34,10 +34,10 @@ main = do
           print $ responseBody res
           exitWith (ExitFailure 2)
         Right record -> do
-          putStrLn $ "Found record for: " ++ (unpack $ record ^. domain)
-          reportsList <- runClientM (getReportsList $ client) env >>= return.fromRight'
+          putStrLn $ "Found record for: " ++ unpack (record ^. domain)
+          reportsList <- fromRight' <$> runClientM (getReportsList client) env
           print $ reportsList ^. meta
           let reportIds = map (^. DMARC.id) $ reportsList ^. entries
-          reportsR <- mapM ((flip runClientM env).(getReport client)) reportIds
+          reportsR <- mapM ((`runClientM` env).getReport client) reportIds
           let reports = map fromRight' reportsR
           print $ map (\r -> (r ^. organizationName, r ^. sourceUri,r ^. records)) reports

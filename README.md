@@ -1,4 +1,5 @@
 # postmark-dmarc
+[![Build Status](https://travis-ci.org/mgregson/hs-postmark-dmarc.svg?branch=master)](https://travis-ci.org/mgregson/hs-postmark-dmarc)
 A Haskell library wrapping the Postmark DMARC API.
 
 ## Install

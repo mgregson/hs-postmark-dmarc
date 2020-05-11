@@ -3,12 +3,11 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-|
 Module: Network.Api.Postmark.Dmarc
 Description: A wrapper for
@@ -58,8 +57,8 @@ data IPVersion =
   deriving (Generic, Show)
 
 instance FromJSON IPVersion where
-  parseJSON = withScientific "IPVersion" $ \n ->
-    case n of
+  parseJSON = withScientific "IPVersion" $
+    \case
       4 -> return IPv4
       6 -> return IPv6
       _ -> error "Unable to parse IP protocol version"
@@ -79,7 +78,7 @@ data CreateRecord = CreateRecord
   -- ^ The domain name to produce DMARC report summaries for.
   } deriving (Show)
 makeClassy ''CreateRecord
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 13) }) ''CreateRecord
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 13 }) ''CreateRecord
 makeFields ''CreateRecord
 
 {-| The configuration for a DMARC record being monitored by Postmark. There's
@@ -95,7 +94,7 @@ data Record = Record
   , _recordEmail                                 :: Email
   } deriving (Show)
 makeClassy ''Record
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 7) }) ''Record
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 7 }) ''Record
 makeFields ''Record
 
 {-| The response from the new record creation endpoint. Includes the 'Record'
@@ -130,11 +129,11 @@ of a configuration is the @email@ attribute.
 
 [Postmark Documentation](https://dmarc.postmarkapp.com/api/#update-a-record)
 -}
-data RecordUpdate = RecordUpdate
+newtype RecordUpdate = RecordUpdate
   { _recordUpdateEmail                           :: Email
   } deriving (Show)
 makeClassy ''RecordUpdate
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 13) }) ''RecordUpdate
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 13 }) ''RecordUpdate
 makeFields ''RecordUpdate
 
 {-| The structure returned by the DNS snippet lookup endpoint.
@@ -149,18 +148,18 @@ data DnsSnippet = DnsSnippet
   , _dnsSnippetName                              :: Text
   } deriving (Show)
 makeClassy ''DnsSnippet
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 11) }) ''DnsSnippet
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 11 }) ''DnsSnippet
 makeFields ''DnsSnippet
 
 {-| The response returned by the DNS verification endpoint.
 
 [Postmark Documentation](https://dmarc.postmarkapp.com/api/#verify-dns)
 -}
-data VerifyDnsResponse = VerifyDnsResponse
+newtype VerifyDnsResponse = VerifyDnsResponse
   { _verifyDnsResponseVerified                   :: Bool
   } deriving (Show)
 makeClassy ''VerifyDnsResponse
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 18) }) ''VerifyDnsResponse
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 18 }) ''VerifyDnsResponse
 makeFields ''VerifyDnsResponse
 
 {-| An entry in the list of DMARC reports returned from the API.
@@ -177,7 +176,7 @@ data DmarcReportsListEntry = DmarcReportsListEntry
   , _dmarcReportsListEntryOrganizationName       :: Text
   } deriving (Show)
 makeClassy ''DmarcReportsListEntry
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 22) }) ''DmarcReportsListEntry
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 22 }) ''DmarcReportsListEntry
 makeFields ''DmarcReportsListEntry
 
 {-| Metadata returned from the DMARC reports list API endpoint.
@@ -190,7 +189,7 @@ data DmarcReportsListMeta = DmarcReportsListMeta
   , _dmarcReportsListMetaTotal                   :: Int
   } deriving (Show)
 makeClassy ''DmarcReportsListMeta
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 21) }) ''DmarcReportsListMeta
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 21 }) ''DmarcReportsListMeta
 makeFields ''DmarcReportsListMeta
 
 {-| The full response from the Postmart DMARC reports list API endpoint.
@@ -204,7 +203,7 @@ data DmarcReportsListResponse = DmarcReportsListResponse
   , _dmarcReportsListResponseEntries             :: [DmarcReportsListEntry]
   } deriving (Show)
 makeClassy ''DmarcReportsListResponse
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 25) }) ''DmarcReportsListResponse
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 25 }) ''DmarcReportsListResponse
 makeFields ''DmarcReportsListResponse
 
 {-| An individual record in a particular DMARC report.
@@ -227,7 +226,7 @@ data DmarcReportRecord = DmarcReportRecord
   , _dmarcReportRecordDkimResult                 :: Maybe Text
   } deriving (Show)
 makeClassy ''DmarcReportRecord
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 18) }) ''DmarcReportRecord
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 18 }) ''DmarcReportRecord
 makeFields ''DmarcReportRecord
 
 {-| An individual DMARC report from the Postmark API.
@@ -248,40 +247,40 @@ data DmarcReport = DmarcReport
   , _dmarcReportRecords                          :: [DmarcReportRecord]
   } deriving (Show)
 makeClassy ''DmarcReport
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 12) }) ''DmarcReport
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 12 }) ''DmarcReport
 makeFields ''DmarcReport
 
 {-| The request object to trigger the token recovery process.
 
 [Postmark Documentation](https://dmarc.postmarkapp.com/api/#recover-api-token)
 -}
-data RecoverApiTokenRequest = RecoverApiTokenRequest
+newtype RecoverApiTokenRequest = RecoverApiTokenRequest
   { _recordApiTokenRequestOwner                  :: Text
   } deriving (Show)
 makeClassy ''RecoverApiTokenRequest
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 22) }) ''RecoverApiTokenRequest
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 22 }) ''RecoverApiTokenRequest
 makeFields ''RecoverApiTokenRequest
 
 {-| The response object returned when a token recovery process is requested.
 
 [Postmark Documentation](https://dmarc.postmarkapp.com/api/#recover-api-token)
 -}
-data RecoverApiTokenResponse = RecoverApiTokenResponse
+newtype RecoverApiTokenResponse = RecoverApiTokenResponse
   { _recoverApiTokenResponseRecoveryInitiated    :: Bool
   } deriving (Show)
 makeClassy ''RecoverApiTokenResponse
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 24) }) ''RecoverApiTokenResponse
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 24 }) ''RecoverApiTokenResponse
 makeFields ''RecoverApiTokenResponse
 
 {-| The response returned from the API when token rotation is requested.
 
 [Postmark Documentation](https://dmarc.postmarkapp.com/api/#rotate-api-token)
 -}
-data RotateApiTokenResponse = RotateApiTokenResponse
+newtype RotateApiTokenResponse = RotateApiTokenResponse
   { _rotateApiTokenResponsePrivateToken          :: ApiToken
   } deriving (Show)
 makeClassy ''RotateApiTokenResponse
-deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.(drop 23) }) ''RotateApiTokenResponse
+deriveJSON (defaultOptions { fieldLabelModifier = snakeCase.drop 23 }) ''RotateApiTokenResponse
 makeFields ''RotateApiTokenResponse
 
 {-| Definition of the authenticated API endpoints using the "Servant" type
