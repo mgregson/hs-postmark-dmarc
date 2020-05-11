@@ -1,0 +1,52 @@
+name:                postmark-dmarc
+version:             0.1.0.0
+homepage:            https://github.com/mgregson/hs-postmark-dmarc#readme
+license:             MIT
+author:              Michael Gregson
+maintainer:          mgregson@gregson.io
+copyright:           Michael Gregson (c) 2020
+category:            Network APIs
+synopsis: |
+  A wrapper around Postmark's DMARC REST API
+description: |
+  A wrapper around the [Postmark’s DMARC REST API](https://dmarc.postmarkapp.com/api/)
+  built on top of "Servant.Client"
+extra-source-files:
+  - README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - aeson
+  - aeson-casing
+  - bytestring
+  - lens
+  - servant
+  - servant-client
+  - text
+  - time
+  - unordered-containers
+
+library:
+  source-dirs:      src
+
+tests:
+  postmark-dmarc-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - postmark-dmarc
+      - hspec
+      - either
+      - aeson-diff
+  example-client:
+    main: Main.hs
+    source-dirs: example
+    dependencies:
+      - postmark-dmarc
+      - either
+      - http-client
+      - http-client-tls
